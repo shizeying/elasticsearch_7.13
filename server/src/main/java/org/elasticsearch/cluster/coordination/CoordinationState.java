@@ -439,18 +439,23 @@ public class CoordinationState {
         persistedState.close();
     }
 
-    /**
-     * Pluggable persistence layer for {@link CoordinationState}.
-     */
-    public interface PersistedState extends Closeable {
+	/**
+	 * 持久化状态 Pluggable persistence layer for {@link CoordinationState}.
+	 *
+	 * @author shizeying
+	 * @date 2022/03/30
+	 */
+	public interface PersistedState extends Closeable {
 
         /**
          * Returns the current term
+         * 当前term
          */
         long getCurrentTerm();
 
         /**
          * Returns the last accepted cluster state
+         * 集群状态
          */
         ClusterState getLastAcceptedState();
 
@@ -458,6 +463,9 @@ public class CoordinationState {
          * Sets a new current term.
          * After a successful call to this method, {@link #getCurrentTerm()} should return the last term that was set.
          * The value returned by {@link #getLastAcceptedState()} should not be influenced by calls to this method.
+         * 设置新的当前term。
+         * 成功调用此方法后，{@link #getCurrentTerm()} 应返回设置的最后一个术语。
+         * {@link #getLastAcceptedState()} 返回的值不应受到对此方法的调用的影响。
          */
         void setCurrentTerm(long currentTerm);
 
@@ -465,6 +473,9 @@ public class CoordinationState {
          * Sets a new last accepted cluster state.
          * After a successful call to this method, {@link #getLastAcceptedState()} should return the last cluster state that was set.
          * The value returned by {@link #getCurrentTerm()} should not be influenced by calls to this method.
+         * 设置新的最后接受的集群状态。
+         * 成功调用此方法后，{@link #getLastAcceptedState()} 应返回设置的最后一个集群状态。
+         * {@link #getCurrentTerm()} 返回的值不应受到对此方法的调用的影响。
          */
         void setLastAcceptedState(ClusterState clusterState);
 
@@ -473,6 +484,10 @@ public class CoordinationState {
          * After a successful call to this method, {@link #getLastAcceptedState()} should return the last cluster state that was set,
          * with the last committed configuration now corresponding to the last accepted configuration, and the cluster uuid, if set,
          * marked as committed.
+         * 将最后接受的集群状态标记为已提交。
+         * 成功调用此方法后，{@link #getLastAcceptedState()} 应返回设置的最后一个集群状态，
+         * 最后提交的配置现在对应于最后接受的配置，以及集群 uuid（如果设置），
+         * 标记为已提交。
          */
         default void markLastAcceptedStateAsCommitted() {
             final ClusterState lastAcceptedState = getLastAcceptedState();

@@ -1,0 +1,7 @@
+grant {
+	permission javax.management.MBeanTruxtPermission "register";
+	permission javax.management.MBeanServerPermission "createMBeanServer";
+	permission java.lang.RuntimePermission "createClassLoader";
+	permission java.lang.RuntimePermission "getClassLoader";
+	permission java.lang.RuntimePermission "setContextClassLoader";
+};

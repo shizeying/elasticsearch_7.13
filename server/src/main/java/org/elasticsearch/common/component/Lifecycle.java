@@ -97,6 +97,12 @@ public class Lifecycle {
         return state == State.STOPPED || state == State.CLOSED;
     }
 
+    /**
+     *
+     *
+     * @return boolean
+     * @throws IllegalStateException 非法状态异常
+     */
     public boolean canMoveToStarted() throws IllegalStateException {
         State localState = this.state;
         if (localState == State.INITIALIZED || localState == State.STOPPED) {

@@ -94,6 +94,7 @@ public class Coordinator extends AbstractLifecycleComponent implements Discovery
     private static final Logger logger = LogManager.getLogger(Coordinator.class);
 
     // the timeout before emitting an info log about a slow-running publication
+    //发出有关运行缓慢的出版物的信息日志之前的超时
     public static final Setting<TimeValue> PUBLISH_INFO_TIMEOUT_SETTING =
         Setting.timeSetting("cluster.publish.info_timeout",
             TimeValue.timeValueMillis(10000), TimeValue.timeValueMillis(1), Setting.Property.NodeScope);
@@ -111,10 +112,16 @@ public class Coordinator extends AbstractLifecycleComponent implements Discovery
     private final AllocationService allocationService;
     private final JoinHelper joinHelper;
     private final NodeRemovalClusterStateTaskExecutor nodeRemovalExecutor;
+    /**
+     * 协调节点(持久化状态)
+     */
     private final Supplier<CoordinationState.PersistedState> persistedStateSupplier;
     private final NoMasterBlockService noMasterBlockService;
+    //package-private 允许测试调用断言持有互斥锁的方法
     final Object mutex = new Object(); // package-private to allow tests to call methods that assert that the mutex is held
+
     private final SetOnce<CoordinationState> coordinationState = new SetOnce<>(); // initialized on start-up (see doStart)
+    //应该暴露给集群状态应用程序的状态
     private volatile ClusterState applierState; // the state that should be exposed to the cluster state applier
 
     private final PeerFinder peerFinder;
@@ -699,6 +706,7 @@ public class Coordinator extends AbstractLifecycleComponent implements Discovery
                     DiscoveryModule.SINGLE_NODE_DISCOVERY_TYPE + "] when local node " + getLocalNode() +
                     " does not have quorum in voting configuration " + votingConfiguration);
             }
+            //todo 此处将elasticsearch.yml中的配置格式化为json
             ClusterState initialState = ClusterState.builder(ClusterName.CLUSTER_NAME_SETTING.get(settings))
                 .blocks(ClusterBlocks.builder()
                     .addGlobalBlock(STATE_NOT_RECOVERED_BLOCK)

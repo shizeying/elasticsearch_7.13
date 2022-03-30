@@ -34,10 +34,19 @@ public class CoordinationMetadata implements Writeable, ToXContentFragment {
 
     private final long term;
 
+    /**
+     * 最后一次提交配置
+     */
     private final VotingConfiguration lastCommittedConfiguration;
 
+    /**
+     * 最终接受配置
+     */
     private final VotingConfiguration lastAcceptedConfiguration;
 
+    /**
+     * 投票配置除外
+     */
     private final Set<VotingConfigExclusion> votingConfigExclusions;
 
     private static final ParseField TERM_PARSE_FIELD = new ParseField("term");
@@ -311,6 +320,7 @@ public class CoordinationMetadata implements Writeable, ToXContentFragment {
 
     /**
      * A collection of persistent node ids, denoting the voting configuration for cluster state changes.
+     * 持久节点 ID 的集合，表示集群状态更改的投票配置。
      */
     public static class VotingConfiguration implements Writeable, ToXContentFragment {
 

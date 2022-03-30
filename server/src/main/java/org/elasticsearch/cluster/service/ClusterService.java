@@ -87,6 +87,7 @@ public class ClusterService extends AbstractLifecycleComponent {
 
     @Override
     protected synchronized void doStart() {
+        //todo 加锁之后 app服务启动
         clusterApplierService.start();
         masterService.start();
     }
