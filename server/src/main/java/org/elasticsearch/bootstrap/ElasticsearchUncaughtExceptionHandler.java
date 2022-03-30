@@ -28,6 +28,8 @@ class ElasticsearchUncaughtExceptionHandler implements Thread.UncaughtExceptionH
             } finally {
                 // we use specific error codes in case the above notification failed, at least we
                 // will have some indication of the error bringing us down
+                //我们使用特定的错误代码以防上述通知失败，至少我们
+                //会有一些迹象表明错误使我们失望
                 if (t instanceof InternalError) {
                     halt(128);
                 } else if (t instanceof OutOfMemoryError) {

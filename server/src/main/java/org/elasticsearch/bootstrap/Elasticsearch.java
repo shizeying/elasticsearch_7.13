@@ -73,6 +73,7 @@ class Elasticsearch extends EnvironmentAwareCommand {
             @Override
             public void checkPermission(Permission perm) {
                 // grant all permissions so that we can later set the security manager to the one that we want
+                //授予所有权限，以便我们以后可以将安全管理器设置为我们想要的
             }
 
         });

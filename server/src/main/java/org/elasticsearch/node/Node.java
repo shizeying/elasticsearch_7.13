@@ -897,7 +897,8 @@ public class Node implements Closeable {
                 .flatMap(p -> p.getBootstrapChecks().stream()).collect(Collectors.toList()));
 
         clusterService.addStateApplier(transportService.getTaskManager());
-        // start after transport service so the local disco is known
+        //todo start after transport service so the local disco is known：启动之前
+        //todo 在集群服务之前启动，以便它可以在 ClusterApplierService 上设置初始状态
         discovery.start(); // start before cluster service so that it can set initial state on ClusterApplierService
         clusterService.start();
         assert clusterService.localNode().equals(localNodeFactory.getNode())

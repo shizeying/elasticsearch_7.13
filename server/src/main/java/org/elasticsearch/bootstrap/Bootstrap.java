@@ -215,6 +215,13 @@ final class Bootstrap {
         }
 
         node = new Node(environment) {
+            /**
+             * 在接受节点请求之前进行校验
+             * @param context               the bootstrap context for this node
+             * @param boundTransportAddress the network addresses the node is
+             * @param checks
+             * @throws NodeValidationException
+             */
             @Override
             protected void validateNodeBeforeAcceptingRequests(
                 final BootstrapContext context,
@@ -387,11 +394,14 @@ final class Bootstrap {
             }
 
             // fail if somebody replaced the lucene jars
+            //检测Lucene的jar包是否符合
             checkLucene();
 
             // install the default uncaught exception handler; must be done before security is
             // initialized as we do not want to grant the runtime permission
             // setDefaultUncaughtExceptionHandler
+            //todo 安装默认的未捕获异常处理程序；必须在安全之前完成初始化，因为我们不想授予运行时权限
+            //setDefaultUncaughtExceptionHandler
             Thread.setDefaultUncaughtExceptionHandler(new ElasticsearchUncaughtExceptionHandler());
 
             INSTANCE.setup(true, environment);
