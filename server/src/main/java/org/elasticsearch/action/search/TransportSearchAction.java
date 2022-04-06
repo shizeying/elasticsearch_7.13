@@ -644,6 +644,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
         }
         if (searchRequest.allowPartialSearchResults() == null) {
             // No user preference defined in search request - apply cluster service default
+            //搜索请求中未定义用户首选项 - 应用集群服务默认值
             searchRequest.allowPartialSearchResults(searchService.defaultAllowPartialSearchResults());
         }
         if (searchRequest.isSuggestOnly()) {
