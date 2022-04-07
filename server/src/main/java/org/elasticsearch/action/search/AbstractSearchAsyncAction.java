@@ -284,6 +284,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
          * continue on the same thread in the case that we never went async and this happens repeatedly we will end up recursing deeply and
          * could stack overflow. To prevent this, we fork if we are called back on the same thread that execution started on and otherwise
          * we can continue (cf. InitialSearchPhase#maybeFork).
+         * 我们捕获此阶段开始的线程。当我们在执行阶段后被回调时，我们要么在同一个线程上（因为我们从未异步过，或者同一个线程是从线程池中选择的），要么是在不同的线程上。如果我们在从未异步过的情况下继续在同一个线程上，并且这种情况反复发生，我们将最终深度递归并可能堆栈溢出。为了防止这种情况，如果我们在执行开始的同一个线程上被回调，我们会分叉，否则我们可以继续（参见 InitialSearchPhasemaybeFork）。
          */
         if (shard == null) {
             assert assertExecuteOnStartThread();

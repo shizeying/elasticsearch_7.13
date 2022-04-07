@@ -317,6 +317,7 @@ public class QueryPhaseResultConsumer extends ArraySearchPhaseResults<SearchPhas
                         aggsCurrentBufferSize += aggsSize;
                     }
                     // add one if a partial merge is pending
+                    //todo 如果部分合并待处理，则添加一个
                     int size = buffer.size() + (hasPartialReduce ? 1 : 0);
                     if (size >= batchReduceSize) {
                         hasPartialReduce = true;

@@ -128,6 +128,7 @@ public class SearchTransportService {
                                  final SearchActionListener<SearchPhaseResult> listener) {
         // we optimize this and expect a QueryFetchSearchResult if we only have a single shard in the search request
         // this used to be the QUERY_AND_FETCH which doesn't exist anymore.
+        //如果我们在搜索请求中只有一个分片，我们会对其进行优化并期望 QueryFetchSearchResult，这曾经是不再存在的 QUERY_AND_FETCH
         final boolean fetchDocuments = request.numberOfShards() == 1;
         Writeable.Reader<SearchPhaseResult> reader = fetchDocuments ? QueryFetchSearchResult::new : QuerySearchResult::new;
 
@@ -382,16 +383,26 @@ public class SearchTransportService {
             super(listener, responseReader);
             this.clientConnections = clientConnections;
             this.nodeId = nodeId;
-            // Increment the number of connections for this node by one
+            // increment the number of connections for this node by one
+            //todo 将此节点的连接数加一 保证client conn的合理性
             clientConnections.compute(nodeId, (id, conns) -> conns == null ? 1 : conns + 1);
         }
 
+        /**
+         * 在这里其实已经开始处理请求了，那么为了保证client conn的合理性，那么我们已经将执行完成的连接池进行-1的操作
+         * 这是由于其实每次请求都会掉{@link this#ConnectionCountingHandler}方法,那么我们可以看到这里会保证我们
+         * clientConnections始终是 1 or conns+1的方式
+         * @param response
+         */
         @Override
         public void handleResponse(Response response) {
             super.handleResponse(response);
             // Decrement the number of connections or remove it entirely if there are no more connections
             // We need to remove the entry here so we don't leak when nodes go away forever
+            //如果没有更多连接，则减少连接数或将其完全删除我们需要删除此处的条目，这样当节点永远消失时我们就不会泄漏
             assert assertNodePresent();
+
+            //减少连接池溢出
             clientConnections.computeIfPresent(nodeId, (id, conns) -> conns.longValue() == 1 ? null : conns - 1);
         }
 
