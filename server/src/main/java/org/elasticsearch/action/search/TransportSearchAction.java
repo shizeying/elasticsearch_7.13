@@ -426,6 +426,7 @@ public class TransportSearchAction extends HandledTransportAction<SearchRequest,
             trackTotalHitsUpTo = source.trackTotalHitsUpTo() == null
                 ? SearchContext.DEFAULT_TRACK_TOTAL_HITS_UP_TO : source.trackTotalHitsUpTo();
             //here we modify the original source so we can re-use it by setting it to each outgoing search request
+            //在这里，我们修改了原始来源，以便我们可以通过将其设置为每个传出的搜索请求来重新使用它
             source.from(0);
             source.size(from + size);
         }

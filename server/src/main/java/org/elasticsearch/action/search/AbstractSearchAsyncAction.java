@@ -130,9 +130,14 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
         // it's number of active shards but use 1 as the default if no replica of a shard is active at this point.
         // on a per shards level we use shardIt.remaining() to increment the totalOps pointer but add 1 for the current shard result
         // we process hence we add one for the non active partition here.
+        /**
+         * 我们需要为非活动分区添加 1，因为我们将其计入总数。这意味着对于迭代器中的每个分片，我们将它的活动分片数相加，但如果此时没有一个分片的副本处于活动状态，
+         * 则使用 1 作为默认值。在每个分片级别上，我们使用 shardIt.remaining() 来增加 totalOps 指针，但为我们处理的当前分片结果加 1，因此我们在此处为非活动分区添加 1。
+         */
         this.expectedTotalOps = shardsIts.totalSizeWith1ForEmpty();
         this.maxConcurrentRequestsPerNode = maxConcurrentRequestsPerNode;
         // in the case were we have less shards than maxConcurrentRequestsPerNode we don't need to throttle
+        //如果我们的分片比 maxConcurrentRequestsPerNode 少，我们不需要限制
         this.throttleConcurrentRequests = maxConcurrentRequestsPerNode < shardsIts.size();
         this.timeProvider = timeProvider;
         this.logger = logger;
@@ -325,6 +330,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
                         /*
                          * It is possible to run into connection exceptions here because we are getting the connection early and might
                          * run into nodes that are not connected. In this case, on shard failure will move us to the next shard copy.
+                         * 这里可能会遇到连接异常，因为我们很早就获得了连接，并且可能会遇到未连接的节点。在这种情况下，分片失败会将我们移动到下一个分片副本。
                          */
                         fork(() -> onShardFailure(shardIndex, shard, shardIt, e));
                     } finally {
@@ -335,6 +341,7 @@ abstract class AbstractSearchAsyncAction<Result extends SearchPhaseResult> exten
             if (throttleConcurrentRequests) {
                 pendingExecutions.tryRun(r);
             } else {
+                //执行303
                 r.run();
             }
         }

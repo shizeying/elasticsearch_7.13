@@ -19,6 +19,7 @@ import java.util.List;
 
 /**
  * Aggregation phase of a search request, used to collect aggregations
+ * 搜索请求的聚合阶段，用于收集聚合
  */
 public class AggregationPhase {
 

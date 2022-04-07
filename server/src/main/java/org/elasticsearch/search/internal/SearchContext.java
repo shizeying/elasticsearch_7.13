@@ -59,6 +59,74 @@ public abstract class SearchContext implements Releasable {
     public static final int DEFAULT_TERMINATE_AFTER = 0;
     public static final int TRACK_TOTAL_HITS_ACCURATE = Integer.MAX_VALUE;
     public static final int TRACK_TOTAL_HITS_DISABLED = -1;
+    /**
+     * 事实上，这里就是elasticsearch 为什么会默认返回10000条结果的出处了，
+     * 我们能够在这里改变默认值，从而达到，返回结果是的总数量
+     * 就比如：
+     * kibana_sample_data_logs/_search POST
+     * {
+     *   "size": 0,
+     *   "aggs": {
+     *     "bytes": {
+     *       "filter": {
+     *         "range": {
+     *           "bytes": {
+     *             "gte": 6000
+     *           }
+     *         }
+     *       }
+     *     }
+     *   }
+     * }
+     * 假设我们  {@linkplain  #DEFAULT_TRACK_TOTAL_HITS_UP_TO=20000}的时候，我们看下这部分的结果返回
+     * {
+     *     "took": 197,
+     *     "timed_out": false,
+     *     "_shards": {
+     *         "total": 1,
+     *         "successful": 1,
+     *         "skipped": 0,
+     *         "failed": 0
+     *     },
+     *     "hits": {
+     *         "total": {
+     *             "value": 14074,
+     *             "relation": "eq"
+     *         },
+     *         "max_score": null,
+     *         "hits": []
+     *     },
+     *     "aggregations": {
+     *         "bytes": {
+     *             "doc_count": 6300
+     *         }
+     *     }
+     * }
+     * 当我们还原为 {@linkplain  #DEFAULT_TRACK_TOTAL_HITS_UP_TO=10000}的时候，我们可以看下
+     * {
+     *     "took": 98,
+     *     "timed_out": false,
+     *     "_shards": {
+     *         "total": 1,
+     *         "successful": 1,
+     *         "skipped": 0,
+     *         "failed": 0
+     *     },
+     *     "hits": {
+     *         "total": {
+     *             "value": 10000,
+     *             "relation": "gte"
+     *         },
+     *         "max_score": null,
+     *         "hits": []
+     *     },
+     *     "aggregations": {
+     *         "bytes": {
+     *             "doc_count": 6300
+     *         }
+     *     }
+     * }
+     */
     public static final int DEFAULT_TRACK_TOTAL_HITS_UP_TO = 10000;
 
     protected final List<Releasable> releasables = new CopyOnWriteArrayList<>();
@@ -230,6 +298,7 @@ public abstract class SearchContext implements Releasable {
     public abstract SearchContext trackTotalHitsUpTo(int trackTotalHits);
 
     /**
+     * 指示要准确计数的命中总数。默认为 {@link #DEFAULT_TRACK_TOTAL_HITS_UP_TO}。
      * Indicates the total number of hits to count accurately.
      * Defaults to {@link #DEFAULT_TRACK_TOTAL_HITS_UP_TO}.
      */

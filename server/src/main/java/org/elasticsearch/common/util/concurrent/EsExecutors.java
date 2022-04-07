@@ -137,6 +137,7 @@ public class EsExecutors {
     }
 
     /**
+     * 捕获异常
      * Checks if the runnable arose from asynchronous submission of a task to an executor. If an uncaught exception was thrown
      * during the execution of this task, we need to inspect this runnable and see if it is an error that should be propagated
      * to the uncaught exception handler.
@@ -156,6 +157,8 @@ public class EsExecutors {
                  * inspect the cause of an execution. We are going to be extra paranoid here though and completely unwrap the
                  * exception to ensure that there is not a buried error anywhere. We assume that a general exception has been
                  * handled by the executed task or the task submitter.
+                 * 理论上，Futureget 只能抛出取消异常、中断异常或执行异常。我们希望忽略取消异常，恢复中断异常的中断状态，并检查执行原因。
+                 * 不过，我们将在这里更加偏执，并完全解开异常以确保任何地方都没有隐藏的错误。我们假设执行的任务或任务提交者已经处理了一般异常。
                  */
                 assert e instanceof CancellationException
                     || e instanceof InterruptedException

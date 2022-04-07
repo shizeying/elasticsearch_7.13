@@ -722,6 +722,13 @@ public class SearchRequest extends ActionRequest implements IndicesRequest.Repla
         return hasChanged ? new SearchRequest(this).source(source) : this;
     }
 
+    /**
+     * 解决返回的最终个数大小{@link  SearchContext#DEFAULT_TRACK_TOTAL_HITS_UP_TO}
+     *
+     * @param scroll scroll
+     * @param source source
+     * @return int
+     */
     public static int resolveTrackTotalHitsUpTo(Scroll scroll, SearchSourceBuilder source) {
         if (scroll != null) {
             // no matter what the value of track_total_hits is

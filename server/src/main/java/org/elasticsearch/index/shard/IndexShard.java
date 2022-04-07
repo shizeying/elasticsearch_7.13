@@ -260,6 +260,10 @@ public class IndexShard extends AbstractIndexShardComponent implements IndicesCl
     // for replicas, replication is also allowed while recovering, since we index also during recovery to replicas and rely on
     // version checks to make sure its consistent a relocated shard can also be target of a replication if the relocation target has not
     // been marked as active yet and is syncing it's changes back to the relocation source
+    /**
+     * 对于主节点，我们只允许在实际启动时写入（因此集群决定我们启动）以防我们有主节点的重定位，我们还允许在阶段 2 完成后写入，其中分片可能处于状态 RECOVERING 或 POST_RECOVERY .
+     * 对于副本，在恢复时也允许复制，因为我们也在恢复到副本期间建立索引并依靠版本检查来确保其一致，如果重定位目标尚未标记为活动，则重定位的分片也可以成为复制的目标，并且正在将其更改同步回重定位源
+     */
     private static final EnumSet<IndexShardState> writeAllowedStates = EnumSet.of(IndexShardState.RECOVERING,
         IndexShardState.POST_RECOVERY, IndexShardState.STARTED);
 

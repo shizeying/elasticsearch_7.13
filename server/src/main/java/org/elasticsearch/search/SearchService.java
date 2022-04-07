@@ -669,6 +669,9 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
         try {
             if (request.scroll() != null) {
                 decreaseScrollContexts = openScrollContexts::decrementAndGet;
+                /**
+                 *todo 当 openScrollContexts.incrementAndGet()内的值是不能够大于maxOpenScrollContext
+                 */
                 if (openScrollContexts.incrementAndGet() > maxOpenScrollContext) {
                     throw new ElasticsearchException(
                         "Trying to create too many scroll contexts. Must be less than or equal to: [" +
@@ -691,6 +694,9 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
             //
             // Note that it's ok to keep the search states in ReaderContext even when the coordinating node also sends
             // them back in the fetch phase and it only happens in a mixed cluster.
+            /**
+             * 以前，搜索状态存储在数据节点上的 ReaderContext 中。从 7.10 开始，它们现在在 QuerySearchResult 中发送到协调节点，然后协调节点在 ShardFetchSearchRequest 中将它们发送回。我们必须将搜索状态保存在 ReaderContext 中，除非协调节点保证在获取阶段将它们发回。我们必须在 ReaderContext 中保留搜索状态的三种情况： 1. 滚动请求 2. 协调节点或代理节点（即 CCS）在旧版本上。 ShardSearchRequest 的 `channelVersion` 是请求已通过的节点的最低版本，可用于确定这一点。 3. 集群上的任何节点都在旧版本上。这种额外检查是为了避免通过新代理节点发送 ShardSearchRequest 而在旧代理节点上发送 ShardFetchSearchRequest 的情况。请注意，即使协调节点也在获取阶段将它们发送回并且它只发生在混合集群中，也可以将搜索状态保留在 ReaderContext 中。
+             */
             if (request.scroll() != null ||
                 request.getChannelVersion().before(Version.V_7_12_1) ||
                 clusterService.state().nodes().getMinNodeVersion().before(Version.V_7_12_1)) {
@@ -1130,6 +1136,7 @@ public class SearchService extends AbstractLifecycleComponent implements IndexEv
     /**
      * Shortcut ids to load, we load only "from" and up to "size". The phase controller
      * handles this as well since the result is always size * shards for Q_T_F
+     * 要加载的快捷方式 ID，我们仅加载“来自”和最多“大小”。相位控制器也处理这个问题，因为结果总是 Q_T_F 的大小分片
      */
     private void shortcutDocIdsToLoad(SearchContext context) {
         final int[] docIdsToLoad;

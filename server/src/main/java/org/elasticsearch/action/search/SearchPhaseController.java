@@ -513,6 +513,7 @@ public final class SearchPhaseController {
 
     /*
      * Returns the size of the requested top documents (from + size)
+     * 判断默认返回数量
      */
     static int getTopDocsSize(SearchRequest request) {
         if (request.source() == null) {
@@ -590,6 +591,7 @@ public final class SearchPhaseController {
 
     /**
      * Returns a new {@link QueryPhaseResultConsumer} instance that reduces search responses incrementally.
+     * 最终返回
      */
     QueryPhaseResultConsumer newSearchPhaseResults(Executor executor,
                                                    CircuitBreaker circuitBreaker,

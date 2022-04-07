@@ -964,6 +964,7 @@ public class IndexService extends AbstractIndexComponent implements IndicesClust
         @Override
         protected boolean mustReschedule() {
             // don't re-schedule if the IndexService instance is closed or if the index is closed
+            //如果 IndexService 实例已关闭或索引已关闭，请不要重新安排
             return indexService.closed.get() == false
                 && indexService.indexSettings.getIndexMetadata().getState() == IndexMetadata.State.OPEN;
         }

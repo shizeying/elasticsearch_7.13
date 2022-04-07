@@ -86,6 +86,8 @@ public final class IndexSettings {
      * certainly profile their cluster and decide to set it to 100,000
      * safely. 1,000,000 is probably way to high for any cluster to set
      * safely.
+     * 描述查询中 from + size 最大值的索引设置。查询中 from + size 的默认最大值为 10,000。这被选为保守的默认设置，因为它肯定不会造成麻烦。
+     * 用户当然可以分析他们的集群并决定将其安全地设置为 100,000。对于任何集群来说，1,000,000 可能是安全设置的高点
      */
     public static final Setting<Integer> MAX_RESULT_WINDOW_SETTING =
         Setting.intSetting("index.max_result_window", 10000, 1, Property.Dynamic, Property.IndexScope);

@@ -135,6 +135,9 @@ public class QueryPhase {
         // Pre-process aggregations as late as possible. In the case of a DFS_Q_T_F
         // request, preProcess is called on the DFS phase phase, this is why we pre-process them
         // here to make sure it happens during the QUERY phase
+        /**
+         * 尽可能晚地预处理聚合。在 DFS_Q_T_F 请求的情况下，在 DFS 阶段调用 preProcess，这就是为什么我们在这里对它们进行预处理以确保它在 QUERY 阶段发生
+         */
         aggregationPhase.preProcess(searchContext);
         boolean rescore = executeInternal(searchContext);
 

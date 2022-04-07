@@ -57,6 +57,7 @@ class SearchQueryThenFetchAsyncAction extends AbstractSearchAsyncAction<SearchPh
 
         // register the release of the query consumer to free up the circuit breaker memory
         // at the end of the search
+        //注册查询消费者的释放以在搜索结束时释放断路器内存
         addReleasable(resultConsumer);
 
         boolean hasFetchPhase = request.source() == null ? true : request.source().size() > 0;
