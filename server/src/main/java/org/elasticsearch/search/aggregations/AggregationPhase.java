@@ -7,6 +7,9 @@
  */
 package org.elasticsearch.search.aggregations;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.stream.Stream;
 import org.apache.lucene.search.Collector;
 import org.elasticsearch.common.inject.Inject;
 import org.elasticsearch.search.internal.SearchContext;
@@ -81,4 +84,5 @@ public class AggregationPhase {
         context.aggregations(null);
         context.queryCollectors().remove(AggregationPhase.class);
     }
+
 }

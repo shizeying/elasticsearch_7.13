@@ -30,6 +30,10 @@ public class XContentSqlExtension implements XContentBuilderExtension {
         map.put(Date.class, (b, v) -> b.value(((Date) v).getTime()));
         map.put(ZonedDateTime.class, (b, v) -> b.value(StringUtils.toString(v)));
         return map;
+
+
+
+
     }
 
     @Override
