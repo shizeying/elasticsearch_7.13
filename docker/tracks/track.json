@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "title": "test",
+  "description": "测试一次任务",
+  "indices": [
+    {
+      "name": "test",
+      "types": {
+        "name": "test",
+        "documents": "output.json",
+        "document-count": 124846,
+        "uncompressed-bytes": 9999999999
+      }
+    }
+  ],
+  "operations": [
+    {
+      "name": "force-merge",
+      "operation-type": "force-merge"
+    },
+    {
+      "name": "match-all-query",
+      "operation-type": "search",
+      "body": {
+        "query": {
+          "match_all": {}
+        }
+      }
+    },
+    {
+      "name": "index-docs",
+      "operation-type": "index",
+      "target-index": "test",
+      "bulk-size": 124846
+    }
+  ],
+  "challenges": [
+    {
+      "name": "index-only",
+      "description": "",
+      "default": true,
+      "index-settings": {
+        "index.number_of_replicas": 0
+      },
+      "schedule": [
+        {
+          "operation": "index-docs",
+          "warmup-time-period": 120,
+          "clients": 8
+        }
+      ]
+    }
+  ]
+}

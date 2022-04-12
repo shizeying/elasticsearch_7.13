@@ -1,0 +1,9 @@
+version: "3"
+services:
+  my_track:
+    image:  elastic/rally
+    container_name: rally
+    volumes:
+#      - ./rally.ini:/rally/.rally/rally.ini
+      - ./tracks:/root/.rally/benchmarks/tracks
+    command: esrally race --track-path=/root/.rally/benchmarks/tracks/track.json --pipeline=benchmark-only --target-hosts=localhost:9200

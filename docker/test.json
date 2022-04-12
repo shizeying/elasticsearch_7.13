@@ -1,0 +1,29 @@
+{
+  "name": "parallel-any",
+  "description": "Track completed-by property",
+  "schedule": [
+    {
+      "parallel": {
+        "completed-by": "any",
+        "tasks": [
+          {
+            "name": "bulk-task-1",
+            "operation": {
+              "operation-type": "bulk",
+              "bulk-size": 1000
+            },
+            "clients": 8
+          },
+          {
+            "name": "bulk-task-2",
+            "operation": {
+              "operation-type": "bulk",
+              "bulk-size": 500
+            },
+            "clients": 8
+          }
+        ]
+      }
+    }
+  ]
+}
