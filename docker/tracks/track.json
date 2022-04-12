@@ -1,52 +1,77 @@
 {
   "version": 2,
-  "title": "test",
-  "description": "测试一次任务",
+  "description": "Tutorial benchmark for Rally",
   "indices": [
     {
-      "name": "test",
-      "types": {
-        "name": "test",
-        "documents": "output.json",
-        "document-count": 124846,
-        "uncompressed-bytes": 9999999999
-      }
+      "name": "geonames",
+      "body": "index.json",
+      "types": [
+        "docs"
+      ]
     }
   ],
-  "operations": [
+  "corpora": [
     {
-      "name": "force-merge",
-      "operation-type": "force-merge"
-    },
-    {
-      "name": "match-all-query",
-      "operation-type": "search",
-      "body": {
-        "query": {
-          "match_all": {}
+      "name": "rally-tutorial",
+      "documents": [
+        {
+          "target-index": "geonames",
+          "source-file": "documents.json.bz2",
+          "document-count": 8647880
         }
-      }
-    },
-    {
-      "name": "index-docs",
-      "operation-type": "index",
-      "target-index": "test",
-      "bulk-size": 124846
+      ]
     }
   ],
   "challenges": [
     {
-      "name": "index-only",
-      "description": "",
+      "name": "index-and-query",
       "default": true,
-      "index-settings": {
-        "index.number_of_replicas": 0
-      },
       "schedule": [
         {
-          "operation": "index-docs",
-          "warmup-time-period": 120,
-          "clients": 8
+          "operation": {
+            "operation-type": "delete-index"
+          }
+        },
+        {
+          "operation": {
+            "operation-type": "create-index"
+          }
+        },
+        {
+          "operation": {
+            "operation-type": "bulk",
+            "bulk-size": 20
+          },
+          "target-throughput": 100,
+          "variation-millis": 1,
+          "clients": 5000,
+          "warmup-iterations": 1,
+          "iterations": 1000
+        },
+        {
+          "operation": {
+            "operation-type": "force-merge"
+          },
+          "clients": 5000,
+          "warmup-iterations": 1000,
+          "iterations": 1000,
+          "target-throughput": 100
+        },
+        {
+          "operation": {
+            "name": "query-match-all",
+            "operation-type": "search",
+            "path": "geonames/_search",
+            "body": {
+              "query": {
+                "match_all": {}
+              }
+            }
+          },
+          "clients": 5000,
+          "warmup-iterations": 1000,
+          "iterations": 1000,
+          "target-throughput": 100
         }
       ]
     }

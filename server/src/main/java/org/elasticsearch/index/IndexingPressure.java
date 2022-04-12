@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class IndexingPressure {
 
     public static final Setting<ByteSizeValue> MAX_INDEXING_BYTES =
-        Setting.memorySizeSetting("indexing_pressure.memory.limit", "10%", Setting.Property.NodeScope);
+        Setting.memorySizeSetting("indexing_pressure.memory.limit", "1%", Setting.Property.NodeScope);
 
     private static final Logger logger = LogManager.getLogger(IndexingPressure.class);
 
