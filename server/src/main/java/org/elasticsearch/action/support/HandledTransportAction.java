@@ -18,6 +18,7 @@ import org.elasticsearch.transport.TransportService;
 
 /**
  * A TransportAction that self registers a handler into the transport service
+ * 将处理程序自行注册到传输服务中的 TransportAction
  */
 public abstract class HandledTransportAction<Request extends ActionRequest, Response extends ActionResponse>
         extends TransportAction<Request, Response> {
@@ -50,6 +51,7 @@ public abstract class HandledTransportAction<Request extends ActionRequest, Resp
         @Override
         public final void messageReceived(final Request request, final TransportChannel channel, Task task) {
             // We already got the task created on the network layer - no need to create it again on the transport layer
+            //我们已经在网络层创建了任务 - 无需在传输层再次创建它
             execute(task, request, new ChannelActionListener<>(channel, actionName, request));
         }
     }

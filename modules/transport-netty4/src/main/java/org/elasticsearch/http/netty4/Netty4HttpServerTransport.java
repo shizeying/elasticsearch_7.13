@@ -82,6 +82,7 @@ public class Netty4HttpServerTransport extends AbstractHttpServerTransport {
      * collection of buffers is resized.
      *
      * By default we assume the Ethernet MTU (1500 bytes) but users can override it with a system property.
+     * io.netty.handler.codec.MessageAggregator 接收到的单个消息的大小（以字节为单位），该消息累积 HTTP 请求的内容。此数字用于在调整 MessageAggregator 的内部缓冲区集合大小之前估计允许的缓冲区的最大数量。默认情况下，我们假设以太网 MTU（1500 字节），但用户可以使用系统属性覆盖它。
      */
     private static final ByteSizeValue MTU = new ByteSizeValue(Long.parseLong(System.getProperty("es.net.mtu", "1500")));
 
@@ -91,21 +92,22 @@ public class Netty4HttpServerTransport extends AbstractHttpServerTransport {
         new Setting<>(SETTING_KEY_HTTP_NETTY_MAX_COMPOSITE_BUFFER_COMPONENTS, (s) -> {
             ByteSizeValue maxContentLength = SETTING_HTTP_MAX_CONTENT_LENGTH.get(s);
             /*
-             * Netty accumulates buffers containing data from all incoming network packets that make up one HTTP request in an instance of
-             * io.netty.buffer.CompositeByteBuf (think of it as a buffer of buffers). Once its capacity is reached, the buffer will iterate
-             * over its individual entries and put them into larger buffers (see io.netty.buffer.CompositeByteBuf#consolidateIfNeeded()
-             * for implementation details). We want to to resize that buffer because this leads to additional garbage on the heap and also
+             * netty accumulates buffers containing data from all incoming network packets that make up one http request in an instance of
+             * io.netty.buffer.compositebytebuf (think of it as a buffer of buffers). once its capacity is reached, the buffer will iterate
+             * over its individual entries and put them into larger buffers (see io.netty.buffer.compositebytebuf#consolidateifneeded()
+             * for implementation details). we want to to resize that buffer because this leads to additional garbage on the heap and also
              * increases the application's native memory footprint (as direct byte buffers hold their contents off-heap).
              *
-             * With this setting we control the CompositeByteBuf's capacity (which is by default 1024, see
-             * io.netty.handler.codec.MessageAggregator#DEFAULT_MAX_COMPOSITEBUFFER_COMPONENTS). To determine a proper default capacity for
-             * that buffer, we need to consider that the upper bound for the size of HTTP requests is determined by `maxContentLength`. The
-             * number of buffers that are needed depend on how often Netty reads network packets which depends on the network type (MTU).
-             * We assume here that Elasticsearch receives HTTP requests via an Ethernet connection which has a MTU of 1500 bytes.
+             * with this setting we control the compositebytebuf's capacity (which is by default 1024, see
+             * io.netty.handler.codec.messageaggregator#default_max_compositebuffer_components). to determine a proper default capacity for
+             * that buffer, we need to consider that the upper bound for the size of http requests is determined by `maxcontentlength`. the
+             * number of buffers that are needed depend on how often netty reads network packets which depends on the network type (mtu).
+             * we assume here that elasticsearch receives http requests via an ethernet connection which has a mtu of 1500 bytes.
              *
-             * Note that we are *not* pre-allocating any memory based on this setting but rather determine the CompositeByteBuf's capacity.
-             * The tradeoff is between less (but larger) buffers that are contained in the CompositeByteBuf and more (but smaller) buffers.
-             * With the default max content length of 100MB and a MTU of 1500 bytes we would allow 69905 entries.
+             * note that we are *not* pre-allocating any memory based on this setting but rather determine the compositebytebuf's capacity.
+             * the tradeoff is between less (but larger) buffers that are contained in the compositebytebuf and more (but smaller) buffers.
+             * with the default max content length of 100mb and a mtu of 1500 bytes we would allow 69905 entries.
+             * netty 在 io.netty.buffer.compositebytebuf 实例中累积包含来自所有传入网络数据包的数据的缓冲区，这些数据包构成一个 http 请求（将其视为缓冲区的缓冲区）。一旦达到其容量，缓冲区将遍历其各个条目并将它们放入更大的缓冲区（有关实现细节，请参见 io.netty.buffer.compositebytebufconsolidateifneeded() ）。我们想要调整该缓冲区的大小，因为这会导致堆上出现额外的垃圾，并且还会增加应用程序的本机内存占用（因为直接字节缓冲区将其内容保存在堆外）。通过这个设置，我们控制了复合字节缓冲区的容量（默认为 1024，参见 io.netty.handler.codec.messageaggregatordefault_max_compositebuffer_components）。为了确定该缓冲区的适当默认容量，我们需要考虑 http 请求大小的上限由“maxcontentlength”确定。所需的缓冲区数量取决于 netty 读取网络数据包的频率，这取决于网络类型 (mtu)。我们在这里假设 elasticsearch 通过以太网连接接收 http 请求，该连接的 mtu 为 1500 字节。请注意，我们不是基于此设置预先分配任何内存，而是确定复合字节缓冲区的容量。权衡是在复合字节缓冲区中包含的更少（但更大）缓冲区和更多（但更小）缓冲区之间进行权衡。默认最大内容长度为 100mb，mtu 为 1500 字节，我们将允许 69905 个条目。
              */
             long maxBufferComponentsEstimate = Math.round((double) (maxContentLength.getBytes() / MTU.getBytes()));
             // clamp value to the allowed range
